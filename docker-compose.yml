@@ -7,3 +7,27 @@ services:
       - ./backend:/var/www/backend
     ports:
       - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://scalar:scalar@db:5432/scalar_db
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: scalar_db
+      POSTGRES_USER: scalar
+      POSTGRES_PASSWORD: scalar
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scalar -d scalar_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

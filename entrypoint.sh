@@ -1,6 +1,8 @@
 #!/bin/bash
+set -e
+
 if [ ! -d "vendor" ]; then
-    composer install
+    composer install --no-interaction
 fi
 
-php-fpm
+exec php -S 0.0.0.0:8000 -t public/
