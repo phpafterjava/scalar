@@ -78,7 +78,7 @@ docker compose exec backend php bin/console secrets:generate-keys
 openssl rand -hex 32
 ```
 
-## Useful commands
+## Frontend commands
 
 ```bash
 # Open a shell in the backend container
@@ -96,3 +96,11 @@ docker compose exec backend php bin/console cache:clear
 # Check container logs
 docker compose logs -f backend
 ```
+
+# Frontend commands 
+
+# Build Vue.JS
+docker build -t frontend -f infra/docker/frontend.Dockerfile .
+
+# Run 
+docker run -p 5173:5173 frontend
