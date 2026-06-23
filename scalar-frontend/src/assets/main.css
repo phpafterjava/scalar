@@ -1,11 +1,44 @@
 @import "tailwindcss";
 
+/* ── Scalar — Blueprint Terminal design tokens ───────────────────── */
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Surfaces (warm ink) */
+  --color-ink: #0e1116;
+  --color-surface: #161b22;
+  --color-surface-2: #1b2129;
+  --color-line: #2a323d;
+  --color-line-strong: #3a4452;
+  --color-grid: #243040;
+
+  /* Text */
+  --color-fg: #e6edf3;
+  --color-fg-muted: #aab4c0;
+  --color-fg-faint: #6b7785;
+
+  /* Accents — one strict role each */
+  --color-signal: #4ade80;     /* primary / active / success / unlocked */
+  --color-signal-ink: #052e16; /* text on signal */
+  --color-heat: #f59e0b;       /* adaptive difficulty / level only */
+  --color-gold: #d4a537;       /* premium only */
+  --color-alert: #f87171;      /* failure */
 }
 
 html,
 body {
   overscroll-behavior: none;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-fg);
+}
+
+/* Blueprint coordinate grid — subtle texture for hero/landing surfaces */
+.bp-grid {
+  background-image:
+    repeating-linear-gradient(to right, rgba(148, 163, 184, 0.03) 0 1px, transparent 1px 120px),
+    repeating-linear-gradient(to bottom, rgba(148, 163, 184, 0.03) 0 1px, transparent 1px 120px);
 }

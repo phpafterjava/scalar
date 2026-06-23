@@ -3,99 +3,89 @@ import AppNav from '@/components/AppNav.vue'
 
 const features = [
   {
-    title: 'Test adaptatif réel',
-    desc: 'Pas un quiz basique. Un algorithme qui ajuste la difficulté en temps réel pour cerner votre niveau exact en quelques minutes.',
-    color: 'indigo' as const,
+    num: '01',
+    title: 'Test adaptatif',
+    desc: 'Ton niveau mesuré en 10–20 questions. Difficulté ajustée en temps réel.',
   },
   {
-    title: 'Parcours généré par l\'IA',
-    desc: 'Chaque apprenant reçoit un plan unique. Les modules maîtrisés sont sautés, les lacunes comblées en priorité.',
-    color: 'green' as const,
+    num: '02',
+    title: 'Parcours IA',
+    desc: 'Curriculum généré uniquement pour toi depuis ton diagnostic réel.',
   },
   {
-    title: 'Sandbox Docker réelle',
-    desc: 'Chaque exercice s\'exécute dans un vrai conteneur isolé. Pas de widget bridé — votre code tourne vraiment.',
-    color: 'amber' as const,
+    num: '03',
+    title: 'Sandbox Docker',
+    desc: 'Ton code tourne dans un vrai conteneur isolé — pas un widget.',
   },
 ]
 
-const colorMap = {
-  indigo: { bg: 'bg-indigo-500/10', dot: 'bg-indigo-500/50' },
-  green:  { bg: 'bg-green-500/10',  dot: 'bg-green-500/50' },
-  amber:  { bg: 'bg-amber-400/10',  dot: 'bg-amber-400/50' },
-}
-
-const trustItems = [
-  'Test gratuit sans carte bancaire',
-  'Sandbox Docker incluse',
-  'Annulable à tout moment',
-]
+const trustItems = ['Gratuit', 'Sans carte bancaire', '2 modules offerts']
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-950 text-slate-50 overflow-x-hidden">
+  <div class="relative min-h-screen bg-ink text-fg overflow-x-hidden">
     <AppNav />
 
-    <!-- Background glow blobs -->
+    <!-- Blueprint coordinate grid -->
+    <div class="fixed inset-0 bp-grid pointer-events-none" aria-hidden="true"></div>
+
+    <!-- Background glow -->
     <div class="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      <div class="absolute top-1/4 left-1/3 w-[640px] h-[440px] rounded-full blur-[140px]" style="background:rgba(99,102,241,0.08)"></div>
-      <div class="absolute top-1/2 right-1/4 w-[400px] h-[300px] rounded-full blur-[100px]" style="background:rgba(34,197,94,0.05)"></div>
+      <div
+        class="absolute top-1/4 left-1/3 w-[640px] h-[440px] rounded-full blur-[140px]"
+        style="background: rgba(74, 222, 128, 0.05)"
+      ></div>
     </div>
 
-    <!-- Subtle vertical grid lines -->
-    <div
-      class="fixed inset-0 pointer-events-none"
-      aria-hidden="true"
-      style="background-image:repeating-linear-gradient(to right,rgba(148,163,184,0.025) 0px,rgba(148,163,184,0.025) 1px,transparent 1px,transparent 120px)"
-    ></div>
-
     <!-- ── HERO ── -->
-    <section class="relative pt-36 pb-20 px-6 text-center">
+    <section class="relative pt-28 pb-20 px-6 text-center">
       <!-- Badge pill -->
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-700 bg-slate-800/50 text-sm text-slate-400 mb-8">
-        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+      <div
+        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-line bg-surface/60 text-sm text-fg-muted mb-8"
+      >
+        <span class="w-1.5 h-1.5 rounded-full bg-signal animate-pulse"></span>
         Test adaptatif · Parcours IA · Sandbox Docker
       </div>
 
       <!-- Heading -->
-      <h1 class="font-mono font-bold text-5xl md:text-[3.5rem] leading-[1.1] text-slate-50 mb-2 tracking-tight">
-        Votre niveau réel.
+      <h1
+        class="font-mono font-bold text-5xl md:text-[3.5rem] leading-[1.1] text-fg mb-2 tracking-tight"
+      >
+        Apprends à coder.
       </h1>
-      <h2 class="font-mono font-bold text-5xl md:text-[3.5rem] leading-[1.1] text-green-500 mb-8 tracking-tight">
-        Votre parcours, généré par l'IA.
+      <h2
+        class="font-mono font-bold text-5xl md:text-[3.5rem] leading-[1.1] text-signal mb-8 tracking-tight"
+      >
+        À ton niveau. Sur ta voie.
       </h2>
 
       <!-- Subtext -->
-      <p class="text-lg text-slate-400 max-w-xl mx-auto mb-10 leading-relaxed">
-        Scalar évalue votre code, génère un parcours sur mesure et valide vos exercices dans
-        de vrais conteneurs Docker. Gratuit pour démarrer.
+      <p class="text-lg text-fg-muted max-w-2xl mx-auto mb-10 leading-relaxed">
+        Diagnostic adaptatif · Parcours générés par IA · Exercices en sandbox Docker. Apprends en
+        profondeur. Pas en surface.
       </p>
 
       <!-- CTAs -->
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
         <RouterLink
           to="/tarifs"
-          class="px-8 py-3.5 bg-green-500 hover:bg-green-400 text-[#052e16] font-bold text-base rounded-xl transition-colors shadow-lg"
-          style="box-shadow:0 8px 32px rgba(34,197,94,0.2)"
+          class="px-8 py-3.5 bg-signal hover:bg-signal/90 text-signal-ink font-bold text-base rounded-xl transition-colors"
+          style="box-shadow: 0 8px 32px rgba(74, 222, 128, 0.2)"
         >
-          Commencer gratuitement
+          Passer le test de niveau — Gratuit
         </RouterLink>
         <RouterLink
           to="/tarifs"
-          class="px-8 py-3.5 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-slate-100 font-semibold text-base rounded-xl transition-colors"
+          class="px-8 py-3.5 border border-line-strong hover:border-fg-faint text-fg-muted hover:text-fg font-semibold text-base rounded-xl transition-colors"
         >
-          Voir les tarifs
+          Voir un cours d'essai
         </RouterLink>
       </div>
 
       <!-- Trust line -->
-      <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500">
-        <span
-          v-for="item in trustItems"
-          :key="item"
-          class="flex items-center gap-2"
-        >
-          <span class="w-1.5 h-1.5 rounded-full" style="background:rgba(34,197,94,0.6)"></span>
+      <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-fg-faint">
+        <span v-for="item in trustItems" :key="item" class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-signal/60"></span>
           {{ item }}
         </span>
       </div>
@@ -106,17 +96,16 @@ const trustItems = [
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
         <div
           v-for="feature in features"
-          :key="feature.title"
-          class="p-6 rounded-2xl border border-slate-700/60 bg-slate-800/40 backdrop-blur hover:border-slate-600 transition-colors"
+          :key="feature.num"
+          class="p-6 rounded-2xl border border-line bg-surface/60 backdrop-blur hover:border-line-strong transition-colors"
         >
           <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-            :class="colorMap[feature.color].bg"
+            class="inline-flex items-center justify-center w-9 h-7 rounded-md bg-signal/12 font-mono text-xs font-bold text-signal mb-4"
           >
-            <div class="w-4 h-4 rounded" :class="colorMap[feature.color].dot"></div>
+            {{ feature.num }}
           </div>
-          <h3 class="font-semibold text-slate-100 mb-2">{{ feature.title }}</h3>
-          <p class="text-sm text-slate-400 leading-relaxed">{{ feature.desc }}</p>
+          <h3 class="font-semibold text-fg mb-2">{{ feature.title }}</h3>
+          <p class="text-sm text-fg-muted leading-relaxed">{{ feature.desc }}</p>
         </div>
       </div>
     </section>

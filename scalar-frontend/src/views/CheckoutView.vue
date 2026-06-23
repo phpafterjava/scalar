@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { reactive, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
+
+const isAnnual = computed(() => route.query.billing !== 'monthly')
+const price = computed(() => (isAnnual.value ? 84 : 12))
+const periodText = computed(() => (isAnnual.value ? '/an' : '/mois'))
 
 const form = reactive({
   email: '',
@@ -13,7 +18,11 @@ const form = reactive({
 })
 
 function handleSubmit() {
-  router.push({ name: 'confirmation' })
+  router.push({ name: 'confirmation', query: route.query })
+}
+
+function close() {
+  router.push({ name: 'tarifs' })
 }
 
 const premiumFeatures = [
@@ -22,104 +31,103 @@ const premiumFeatures = [
   'Certifications PDF',
   'Support prioritaire',
 ]
+
+const inputClass =
+  'w-full h-10 px-3.5 rounded-xl border border-line bg-surface-2 text-fg placeholder:text-fg-faint focus:outline-none focus:border-signal transition-colors text-sm'
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-950 text-slate-50">
-    <!-- Minimal nav -->
-    <nav class="h-16 flex items-center justify-between px-20 bg-slate-900/80 backdrop-blur border-b border-slate-800">
-      <RouterLink to="/" class="font-mono font-bold text-xl text-green-500 tracking-tight">
-        scalar_
-      </RouterLink>
-      <div class="flex items-center gap-2 px-4 py-2 rounded-full border border-slate-700 bg-slate-800/50">
-        <span class="w-2 h-2 rounded-full bg-green-500"></span>
-        <span class="text-sm text-slate-400 font-medium">Paiement sécurisé</span>
-      </div>
-    </nav>
+  <!-- Dimmed overlay -->
+  <div
+    class="fixed inset-0 z-50 flex items-start md:items-center justify-center p-4 md:p-6 bg-ink/80 backdrop-blur-sm overflow-y-auto"
+    @click.self="close"
+  >
+    <div class="absolute inset-0 bp-grid opacity-40 pointer-events-none" aria-hidden="true"></div>
 
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-3 px-20 py-3 text-sm border-b border-slate-800/50">
-      <RouterLink to="/tarifs" class="text-slate-500 hover:text-slate-300 transition-colors">
-        Tarifs
-      </RouterLink>
-      <span class="text-slate-600">›</span>
-      <span class="text-slate-100 font-semibold">Paiement</span>
-    </div>
+    <!-- Modal -->
+    <div
+      class="relative w-full max-w-3xl my-auto rounded-2xl border border-line bg-surface overflow-hidden shadow-[0_30px_90px_rgba(0,0,0,0.65)] text-fg"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Paiement"
+    >
+      <!-- Close button -->
+      <button
+        type="button"
+        aria-label="Fermer"
+        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg text-fg-faint hover:text-fg hover:bg-surface-2 transition-colors text-lg z-10"
+        @click="close"
+      >
+        ✕
+      </button>
 
-    <!-- Background glow -->
-    <div class="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      <div class="absolute top-1/2 right-1/3 w-[500px] h-[400px] rounded-full blur-[120px]" style="background:rgba(99,102,241,0.05)"></div>
-    </div>
-
-    <!-- ── MAIN LAYOUT ── -->
-    <main class="relative px-6 pb-20 pt-8">
-      <div class="max-w-4xl mx-auto grid md:grid-cols-[420px_1fr] gap-10">
-
+      <div class="grid md:grid-cols-[300px_1fr]">
         <!-- ── LEFT: ORDER SUMMARY ── -->
-        <div class="flex flex-col gap-4">
-          <h2 class="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">
+        <div class="bg-surface-2/50 p-6 flex flex-col gap-4 border-b md:border-b-0 md:border-r border-line">
+          <h2 class="text-xs font-semibold uppercase tracking-widest text-fg-faint mb-1">
             Récapitulatif
           </h2>
 
-          <div class="rounded-2xl border border-slate-700 bg-slate-800/50 p-7 flex flex-col gap-5">
+          <div class="flex flex-col gap-4">
             <!-- Plan header -->
             <div class="flex items-center justify-between">
-              <span class="font-bold text-lg text-slate-100">Scalar Premium</span>
+              <span class="font-bold text-lg text-fg">Scalar Premium</span>
               <span
                 class="px-3 py-1 rounded-full text-xs font-semibold text-indigo-400 border"
                 style="background:rgba(99,102,241,0.15);border-color:rgba(99,102,241,0.35)"
               >
-                Annuel
+                {{ isAnnual ? 'Annuel' : 'Mensuel' }}
               </span>
             </div>
 
-            <div class="border-t border-slate-700"></div>
+            <div class="border-t border-line"></div>
 
             <!-- Price -->
             <div class="flex items-center justify-between">
-              <span class="text-slate-400 text-sm">Total annuel</span>
+              <span class="text-fg-muted text-sm">{{ isAnnual ? 'Total annuel' : 'Total mensuel' }}</span>
               <div class="flex items-baseline gap-1.5">
-                <span class="font-mono font-bold text-3xl text-slate-50">84€</span>
-                <span class="text-slate-400 text-sm">/an</span>
+                <span class="font-mono font-bold text-2xl text-fg">{{ price }}€</span>
+                <span class="text-fg-muted text-xs">{{ periodText }}</span>
               </div>
             </div>
-            <p class="text-xs text-green-500 -mt-2">soit 7€/mois · économisez -35% vs mensuel</p>
+            <p v-if="isAnnual" class="text-xs text-signal -mt-2">soit 7€/mois · économisez -35% vs mensuel</p>
+            <p v-else class="text-xs text-fg-muted -mt-2">sans engagement · résiliable à tout moment</p>
 
-            <div class="border-t border-slate-700"></div>
+            <div class="border-t border-line"></div>
 
             <!-- Features -->
-            <ul class="flex flex-col gap-3">
+            <ul class="flex flex-col gap-2">
               <li
                 v-for="feat in premiumFeatures"
                 :key="feat"
-                class="flex items-center gap-3 text-sm text-slate-200"
+                class="flex items-center gap-3 text-sm text-fg-muted"
               >
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-signal flex-shrink-0"></span>
                 {{ feat }}
               </li>
             </ul>
           </div>
 
           <!-- Guarantee -->
-          <div class="flex items-center gap-2 text-sm text-slate-500">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400/70 flex-shrink-0"></span>
+          <div class="flex items-center gap-2 text-sm text-fg-faint mt-auto pt-4">
+            <span class="w-1.5 h-1.5 rounded-full bg-heat/70 flex-shrink-0"></span>
             Garantie satisfait ou remboursé 7 jours
           </div>
 
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Renouvellement automatique annuel.<br>
+          <p class="text-xs text-fg-faint leading-relaxed">
+            Renouvellement automatique {{ isAnnual ? 'annuel' : 'mensuel' }}.<br>
             Annulable à tout moment depuis votre profil.
           </p>
         </div>
 
         <!-- ── RIGHT: PAYMENT FORM ── -->
-        <div>
-          <h2 class="font-bold text-xl text-slate-100 mb-6">Informations de paiement</h2>
+        <div class="p-6 flex flex-col justify-center">
+          <h2 class="font-bold text-lg text-fg mb-4">Informations de paiement</h2>
 
-          <form class="flex flex-col gap-5" @submit.prevent="handleSubmit">
+          <form class="flex flex-col gap-3.5" @submit.prevent="handleSubmit">
             <!-- Email -->
-            <div class="flex flex-col gap-2">
-              <label class="text-sm font-medium text-slate-400" for="email">Adresse e-mail</label>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-fg-muted" for="email">Adresse e-mail</label>
               <input
                 id="email"
                 v-model="form.email"
@@ -127,13 +135,13 @@ const premiumFeatures = [
                 autocomplete="email"
                 placeholder="vous@exemple.com"
                 required
-                class="w-full h-12 px-4 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
+                :class="inputClass"
               >
             </div>
 
             <!-- Card number -->
-            <div class="flex flex-col gap-2">
-              <label class="text-sm font-medium text-slate-400" for="card">Numéro de carte</label>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-fg-muted" for="card">Numéro de carte</label>
               <input
                 id="card"
                 v-model="form.card"
@@ -143,14 +151,14 @@ const premiumFeatures = [
                 placeholder="1234  5678  9012  3456"
                 maxlength="19"
                 required
-                class="w-full h-12 px-4 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm font-mono tracking-wider"
+                :class="[inputClass, 'font-mono tracking-wider']"
               >
             </div>
 
             <!-- Expiry + CVC -->
             <div class="grid grid-cols-2 gap-4">
-              <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium text-slate-400" for="expiry">Date d'expiration</label>
+              <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-fg-muted" for="expiry">Date d'expiration</label>
                 <input
                   id="expiry"
                   v-model="form.expiry"
@@ -159,11 +167,11 @@ const premiumFeatures = [
                   placeholder="MM / AA"
                   maxlength="7"
                   required
-                  class="w-full h-12 px-4 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm font-mono"
+                  :class="[inputClass, 'font-mono']"
                 >
               </div>
-              <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium text-slate-400" for="cvc">CVC</label>
+              <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-fg-muted" for="cvc">CVC</label>
                 <input
                   id="cvc"
                   v-model="form.cvc"
@@ -173,14 +181,14 @@ const premiumFeatures = [
                   placeholder="•••"
                   maxlength="4"
                   required
-                  class="w-full h-12 px-4 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm font-mono"
+                  :class="[inputClass, 'font-mono']"
                 >
               </div>
             </div>
 
             <!-- Cardholder name -->
-            <div class="flex flex-col gap-2">
-              <label class="text-sm font-medium text-slate-400" for="name">Nom sur la carte</label>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-fg-muted" for="name">Nom sur la carte</label>
               <input
                 id="name"
                 v-model="form.name"
@@ -188,27 +196,28 @@ const premiumFeatures = [
                 autocomplete="cc-name"
                 placeholder="Marie Dupont"
                 required
-                class="w-full h-12 px-4 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
+                :class="inputClass"
               >
             </div>
 
             <!-- Submit -->
             <button
               type="submit"
-              class="w-full py-4 rounded-xl bg-green-500 hover:bg-green-400 text-[#052e16] font-bold text-base transition-colors mt-2"
-              style="box-shadow:0 8px 24px rgba(34,197,94,0.25)"
+              class="w-full py-2.5 rounded-xl bg-signal hover:bg-signal/90 text-signal-ink font-bold text-sm transition-colors mt-1"
+              style="box-shadow:0 8px 24px rgba(74,222,128,0.25)"
+              data-umami-event="Paiement Submit"
             >
-              Payer 84€ / an  →
+              Payer {{ price }}€ / {{ isAnnual ? 'an' : 'mois' }}  →
             </button>
 
             <!-- Stripe attribution -->
-            <div class="flex items-center justify-center gap-2 text-xs text-slate-600">
-              <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+            <div class="flex items-center justify-center gap-2 text-xs text-fg-faint">
+              <span class="w-1 h-1 rounded-full bg-line-strong"></span>
               Paiement traité par Stripe · PCI DSS Level 1
             </div>
           </form>
         </div>
       </div>
-    </main>
+    </div>
   </div>
 </template>

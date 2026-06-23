@@ -8,9 +8,15 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', name: 'landing', component: LandingView },
-    { path: '/tarifs', name: 'tarifs', component: TarifsView },
-    { path: '/checkout', name: 'checkout', component: CheckoutView },
-    { path: '/confirmation', name: 'confirmation', component: ConfirmationView },
+    { 
+      path: '/tarifs', 
+      name: 'tarifs', 
+      component: TarifsView,
+      children: [
+        { path: '/checkout', name: 'checkout', component: CheckoutView },
+        { path: '/confirmation', name: 'confirmation', component: ConfirmationView },
+      ]
+    },
   ],
 })
 

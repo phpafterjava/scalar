@@ -1,17 +1,10 @@
 services:
-  backend:
+  frontend:
     build:
       context: .
-      dockerfile: infra/docker/backend.Dockerfile
-    volumes:
-      - ./backend:/var/www/backend
+      dockerfile: scalar-frontend/Dockerfile
     ports:
-      - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://scalar:scalar@db:5432/scalar_db
+      - "5173:80"
 
   db:
     image: postgres:16-alpine
@@ -29,5 +22,28 @@ services:
       timeout: 5s
       retries: 5
 
+  umami:
+    image: "docker.umami.is/umami-software/umami:latest"
+    container_name: umami
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SERVICE_URL_UMAMI_3000
+      - DATABASE_URL=postgresql://scalar:scalar@db:5432/scalar_db
+      - DATABASE_TYPE=postgres
+      - APP_SECRET=3Gdqywy6Z55KFnIOVIOg3m1cTu26g2J6bBAPxSJqSRh0lsozay
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - "-f"
+        - "http://127.0.0.1:3000/api/heartbeat"
+      interval: 5s
+      timeout: 20s
+      retries: 10
 volumes:
   pgdata:
