@@ -148,8 +148,6 @@ const toggleClass = (active: boolean) =>
             :class="plan.highlight
               ? 'bg-signal hover:bg-signal/90 text-signal-ink'
               : 'border border-line-strong hover:border-fg-faint text-fg-muted hover:text-fg'"
-            data-umami-event="Choisir un plan"
-            :data-umami-event-plan="plan.name"
           >
             {{ plan.cta }}
           </RouterLink>

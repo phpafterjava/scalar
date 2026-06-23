@@ -30,6 +30,13 @@ onMounted(() => {
   onScroll()
 })
 onUnmounted(() => window.removeEventListener('scroll', onScroll))
+
+function handleNavClick(event: Event, label: string) {
+  if (label === 'Parcours' || label === 'Exercices') {
+    event.preventDefault()
+    throw new Error(`Erreur de test GlitchTip depuis la navigation : ${label} !`)
+  }
+}
 </script>
 
 <template>
@@ -54,6 +61,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
         :to="link.to"
         class="relative h-full flex items-center text-sm font-medium transition-colors"
         :class="isActive(link.to) ? 'text-fg' : 'text-fg-muted hover:text-fg'"
+        @click="handleNavClick($event, link.label)"
       >
         {{ link.label }}
         <span
@@ -115,6 +123,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
           :to="link.to"
           class="px-3 py-3 rounded-lg text-sm font-medium transition-colors"
           :class="isActive(link.to) ? 'text-fg bg-surface-2' : 'text-fg-muted hover:text-fg hover:bg-surface-2'"
+          @click="handleNavClick($event, link.label)"
         >
           {{ link.label }}
         </RouterLink>

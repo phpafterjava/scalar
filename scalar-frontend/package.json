@@ -9,13 +9,14 @@
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build",
+    "type-check": "vue-tsc --build",f
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@sentry/vue": "^10.60.0",
     "@tailwindcss/vite": "^4.3.1",
     "tailwindcss": "^4.3.1",
     "vue": "^3.5.32",

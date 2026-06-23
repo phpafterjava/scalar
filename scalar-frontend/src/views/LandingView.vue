@@ -20,6 +20,10 @@ const features = [
 ]
 
 const trustItems = ['Gratuit', 'Sans carte bancaire', '2 modules offerts']
+
+function triggerGlitchtipError() {
+  throw new Error("Erreur de test GlitchTip: page d'accueil");
+}
 </script>
 
 <template>
@@ -80,6 +84,13 @@ const trustItems = ['Gratuit', 'Sans carte bancaire', '2 modules offerts']
         >
           Voir un cours d'essai
         </RouterLink>
+        <button
+          type="button"
+          @click="triggerGlitchtipError"
+          class="px-8 py-3.5 border border-red-500/50 hover:border-red-500 bg-red-950/10 hover:bg-red-950/30 text-red-400 hover:text-red-300 font-semibold text-base rounded-xl transition-colors"
+        >
+          Générer Erreur GlitchTip
+        </button>
       </div>
 
       <!-- Trust line -->

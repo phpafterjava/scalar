@@ -1,29 +1,18 @@
-# Stage 1: Build stage
-FROM node:22-alpine AS build
+FROM node:22-alpine
 
-WORKDIR /app
+WORKDIR /var/www/scalar-frontend
 
-# Copy dependency definitions
+# Copy dependency files
 COPY scalar-frontend/package*.json ./
 
-# Install dependencies (using npm ci for clean, deterministic builds)
-RUN npm ci
+# Install dependencies inside the container
+RUN npm install
 
-# Copy the rest of the frontend source code
+# Copy the rest of the application files
 COPY scalar-frontend/ .
 
-# Build the application for production
-RUN npm run build
+# Expose Vite's dev server port
+EXPOSE 5173
 
-# Stage 2: Production stage
-FROM nginx:stable-alpine
-
-# Copy custom nginx configuration for SPA routing
-COPY scalar-frontend/nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy compiled static files from build stage to nginx directory
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Start Vite dev server with host binding to allow access from the host machine
+CMD ["npm", "run", "dev", "--", "--host"]

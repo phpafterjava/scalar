@@ -23,6 +23,8 @@ function handleSubmit() {
     umami.track('Paiement Soumis', {
       type: isAnnual.value ? 'Annuel' : 'Mensuel',
       price: price.value,
+      revenue: price.value,
+      currency: 'EUR',
     })
   }
   router.push({ name: 'confirmation', query: route.query })

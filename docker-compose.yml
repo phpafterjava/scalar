@@ -3,13 +3,17 @@ services:
     build:
       context: .
       dockerfile: scalar-frontend/Dockerfile
+    volumes:
+      - ./scalar-frontend:/var/www/scalar-frontend
+      # Prevent host volume from overriding node_modules in the container
+      - /var/www/scalar-frontend/node_modules
     ports:
-      - "5173:80"
+      - "5173:5173"
 
-  db:
+  db-glitchtip:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: scalar_db
+      POSTGRES_DB: glitchtip_db
       POSTGRES_USER: scalar
       POSTGRES_PASSWORD: scalar
     ports:
@@ -17,10 +21,36 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U scalar -d scalar_db"]
+      test: ["CMD-SHELL", "pg_isready -U scalar -d glitchtip_db"]
       interval: 5s
       timeout: 5s
       retries: 5
+
+  db-umami:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: umami_db
+      POSTGRES_USER: scalar
+      POSTGRES_PASSWORD: scalar
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata-umami:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scalar -d umami_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  valkey:
+    image: 'valkey/valkey:9.1.0-alpine'
+    container_name: valkey
+    restart: unless-stopped
+    command: 'valkey-server'
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'valkey_data:/data'
 
   umami:
     image: "docker.umami.is/umami-software/umami:latest"
@@ -29,11 +59,11 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      db:
+      db-umami:
         condition: service_healthy
     environment:
       - SERVICE_URL_UMAMI_3000
-      - DATABASE_URL=postgresql://scalar:scalar@db:5432/scalar_db
+      - DATABASE_URL=postgresql://scalar:scalar@db-umami:5432/umami_db
       - DATABASE_TYPE=postgres
       - APP_SECRET=3Gdqywy6Z55KFnIOVIOg3m1cTu26g2J6bBAPxSJqSRh0lsozay
     healthcheck:
@@ -45,5 +75,32 @@ services:
       interval: 5s
       timeout: 20s
       retries: 10
+  glitchtip:
+    image: 'glitchtip/glitchtip:6'
+    ports:
+      - "8000:8000"
+    depends_on:
+      db-glitchtip:
+        condition: service_healthy
+      valkey:
+        condition: service_started
+    environment:
+      DATABASE_URL: 'postgresql://scalar:scalar@db-glitchtip:5432/glitchtip_db'
+      REDIS_URL: 'redis://valkey:6379'
+      SECRET_KEY: 'mnOYaTZV+dwz1Wrf5OH7oar9JpuAmSyyZ5K0mUUE0R4s'
+      GLITCHTIP_DOMAIN: 'http://localhost:8000'
+      ENABLE_ADMIN: 'False'
+      ENABLE_OPENAPI: 'False'
+      GLITCHTIP_ENABLE_MCP: 'False'
+      GLITCHTIP_ENABLE_DUCKDB: 'False'
+      ENABLE_USER_REGISTRATION: 'False'
+      SERVER_ROLE: all_in_one
+    restart: unless-stopped
+    volumes:
+      - 'glitchtip_uploads:/code/uploads'
+
 volumes:
   pgdata:
+  pgdata-umami:
+  valkey_data:
+  glitchtip_uploads:
