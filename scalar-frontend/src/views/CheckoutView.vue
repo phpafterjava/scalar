@@ -18,6 +18,13 @@ const form = reactive({
 })
 
 function handleSubmit() {
+  const umami = (window as any).umami
+  if (umami) {
+    umami.track('Paiement Soumis', {
+      type: isAnnual.value ? 'Annuel' : 'Mensuel',
+      price: price.value,
+    })
+  }
   router.push({ name: 'confirmation', query: route.query })
 }
 
@@ -205,7 +212,6 @@ const inputClass =
               type="submit"
               class="w-full py-2.5 rounded-xl bg-signal hover:bg-signal/90 text-signal-ink font-bold text-sm transition-colors mt-1"
               style="box-shadow:0 8px 24px rgba(74,222,128,0.25)"
-              data-umami-event="Paiement Submit"
             >
               Payer {{ price }}€ / {{ isAnnual ? 'an' : 'mois' }}  →
             </button>
